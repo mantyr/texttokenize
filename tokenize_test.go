@@ -46,3 +46,20 @@ func TestParseTokenizeMultiline(t *testing.T) {
         t.Errorf("Error get field, %q", val)
     }
 }
+
+func TestParseTokenize_MultiParse(t *testing.T) {
+    fields := NewTokenize()
+    fields.LoadFile("./testdata/valuefields.html")
+    fields.Parse("#main_test3 .shortText p")
+    fields.Parse("#main_test3 .shortText2")
+
+    val := fields.Get("main material")
+    if val != "100% polyester" {
+        t.Errorf("Error get field, %q", val)
+    }
+
+    val = fields.Get("material 2")
+    if val != "110% cotton" {
+        t.Errorf("Error get field, %q", val)
+    }
+}
