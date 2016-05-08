@@ -25,11 +25,23 @@ func (f *Fields) SetSelection(sel *goquery.Selection) *Fields {
     return f
 }
 
-func (f *Fields) Parse(selection string) *Fields {
+// Example:
+//  Parse() - for self Selection
+//  Parse("selection") - for find selection
+//  Parse("selection", "selection2", ..., "selectionN") - for more find selection
+func (f *Fields) Parse(params ...string) *Fields {
     text := ""
-    f.doc.Find(selection).Each(func(i int, s *goquery.Selection){
-        text += s.Text()+"\r\n"
-    })
+    if len(params) > 0 {
+        for _, selection := range params {
+            f.doc.Find(selection).Each(func(i int, s *goquery.Selection){
+                text += s.Text()+"\r\n"
+            })
+        }
+    } else {
+        f.doc.Each(func(i int, s *goquery.Selection){
+            text += s.Text()+"\r\n"
+        })
+    }
 
     option := "default"
     buf := bufio.NewReader(bytes.NewBufferString(text))
