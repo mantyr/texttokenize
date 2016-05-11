@@ -2,10 +2,12 @@ package texttokenize
 
 import (
     "github.com/mantyr/goquery"
+    "github.com/mantyr/runner"
     "bufio"
     "strings"
     "io"
     "bytes"
+    "fmt"
 )
 
 func NewTokenize() (f *Fields) {
@@ -105,6 +107,43 @@ func (f *Fields) AddValueLine(key, value string) {
     }
 }
 
+func (f *Fields) Set(key string, value interface{}) {
+    key_source := key
+    key = strings.TrimRight(key, ":=")
+
+    s := fmt.Sprintf("%v", value)
+    s  = strings.Replace(s, `"`, `&quot;`, -1)
+
+    f.d[key] = Field{key_source: key_source, value: s}
+}
+
+func (f *Fields) SetIS(key string, value interface{}) {
+    key_source := key
+    key = strings.TrimRight(key, ":=")
+
+    s := fmt.Sprintf("%v", value)
+    s  = strings.Replace(s, `"`, `&quot;`, -1)
+
+    if runner.Trim(s) == "" {
+        return
+    }
+
+    v, ok := f.d[key]
+    if ok && runner.Trim(v.value) != "" {
+        return
+    }
+
+    f.d[key] = Field{key_source: key_source, value: s}
+}
+
+func (f *Fields) Is(key string) bool {
+    v, ok := f.d[key]
+    if ok && runner.Trim(v.value) != "" {
+        return true
+    }
+    return false
+}
+
 func (f *Fields) Get(key string) string {
     v, ok := f.d[key]
     if !ok {
@@ -113,6 +152,19 @@ func (f *Fields) Get(key string) string {
     return strings.TrimSpace(v.value)
 }
 
+func (f *Fields) Delete(key string) {
+    delete(f.d, key)
+}
+
 func (f *Fields) GetItems() map[string]Field {
     return f.d
 }
+
+func (f *Field) GetKeySource() string {
+    return f.key_source
+}
+
+func (f *Field) Get() string {
+    return f.value
+}
+

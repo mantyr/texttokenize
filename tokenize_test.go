@@ -63,3 +63,27 @@ func TestParseTokenize_MultiParse(t *testing.T) {
         t.Errorf("Error get field, %q", val)
     }
 }
+
+func TestParseBR(t *testing.T) {
+    fields := NewTokenize()
+    fields.LoadFile("./testdata/valuefields.html")
+    fields.Parse("#main_test4 p")
+
+    val := fields.Get("описание")
+    if val != "" {
+        t.Errorf("Error get field, %q", val)
+    }
+
+    val = fields.Get("цвет")
+    if val != "Синий" {
+        t.Errorf("Error get field, %q", val)
+    }
+    val = fields.Get("производитель")
+    if val != "Вьетнам" {
+        t.Errorf("Error get field, %q", val)
+    }
+    val = fields.Get("релиз! условия заказа товара")
+    if val != "- не доступен для заказа по Москве\r\n- только по полной предоплате\r\n- по 1 паре в руки\r\n- акции на данный товар не распространяются" {
+        t.Errorf("Error get field, %q", val)
+    }
+}
